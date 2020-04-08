@@ -11,7 +11,7 @@ Table of contents
   * [Exported names](#exported-names)
 * [Functions](#functions)
   * [Multiple results](#multiple-results)
-  * [Named result values](#named-result-values)
+  * [Named return values](#named-return-values)
 * [Variables](#variables)
   * [Initializers](#initializers)
   * [Short variable declarations](#short-variable-declarations)
