@@ -20,12 +20,12 @@
   * [Type inference](#type-inference)
   * [Constants](#constants)
     * [Numeric constants](#numeric-constants)
-  * [Flow control](#flow-control)
-    * [For](#for)
-    * [If](#if)
-    * [Exercise: Loops and functions](#exercise-loops-and-functions)
-    * [Switch](#switch)
-    * [Defer](#defer)
+* [Flow control](#flow-control)
+  * [For](#for)
+  * [If](#if)
+  * [Exercise: Loops and functions](#exercise-loops-and-functions)
+  * [Switch](#switch)
+  * [Defer](#defer)
 <!--te-->
 
 ## Packages
@@ -248,7 +248,7 @@ In the [if.go](https://github.com/lopecillo/golang/blob/master/if.go) example, `
 
 Variables declared inside an `if` short statement are also available inside any of the `else` blocks.
 
-### Exercise: Loops and functions
+### *Exercise: Loops and functions*
 
 As a way to play with functions and loops, let's implement a square root function: given a number x, we want to find the number z for which z² is most nearly x.
 
