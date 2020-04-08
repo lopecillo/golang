@@ -1,7 +1,6 @@
 # Golang
 
-Table of contents
-=================
+## Table of contents
 
 <!--ts-->
 * [Golang](#golang)
@@ -146,9 +145,9 @@ Variables declared without an explicit initial value are given their *zero* valu
 
 The zero value is:
 
-- `0` for numeric types
-- `false` for the boolean type
-- `""` (the empty string) for strings
+* `0` for numeric types
+* `false` for the boolean type
+* `""` (the empty string) for strings
 
 ### Type conversions
 
