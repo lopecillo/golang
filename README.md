@@ -6,13 +6,13 @@ Every Go program is made up of packages.
 
 Programs start running in package `main`.
 
-The [random.go](https://github.com/lopecillo/golang/random.go) example is using the packages with import paths `"fmt"`, `"time"` and `"math/rand"`.
+The [random.go](https://github.com/lopecillo/golang/blob/master/random.go) example is using the packages with import paths `"fmt"`, `"time"` and `"math/rand"`.
 
 By convention, the package name is the same as the last element of the import path. For instance, the `"math/rand"` package comprises files that begin with the statement `package rand`.
 
 ### Imports
 
-Thie [random.go](https://github.com/lopecillo/golang/random.go) example groups the imports into a parenthesized, "factored" import statement.
+Thie [random.go](https://github.com/lopecillo/golang/blob/master/random.go) example groups the imports into a parenthesized, "factored" import statement.
 
 You can also write multiple import statements, like:
 
@@ -31,13 +31,13 @@ In Go, a name is exported if it begins with a capital letter. For example, `Pizz
 
 When importing a package, you can refer only to its exported names. Any "unexported" names are not accessible from outside the package.
 
-In the [math.go](https://github.com/lopecillo/golang/math.go) example, `math.Pi` works, but `math.pi` wouldn't.
+In the [math.go](https://github.com/lopecillo/golang/blob/master/math.go) example, `math.Pi` works, but `math.pi` wouldn't.
 
 ## Functions
 
 A function can take zero or more arguments.
 
-In the [functions.go](https://github.com/lopecillo/golang/functions.go) example, `add` takes two parameters of type `int`.
+In the [functions.go](https://github.com/lopecillo/golang/blob/master/functions.go) example, `add` takes two parameters of type `int`.
 
 Notice that the type comes *after* the variable name.
 
@@ -45,7 +45,7 @@ Notice that the type comes *after* the variable name.
 
 When two or more consecutive named function parameters share a type, you can omit the type from all but the last.
 
-In the [functions.go](https://github.com/lopecillo/golang/functions.go) example, we shortened
+In the [functions.go](https://github.com/lopecillo/golang/blob/master/functions.go) example, we shortened
 
 ```golang
 x int, y int
@@ -71,13 +71,13 @@ These names should be used to document the meaning of the return values.
 
 A `return` statement without arguments returns the named return values. This is known as a "naked" return.
 
-Naked return statements should be used only in short functions, as with the `split` function in the [functions.go](https://github.com/lopecillo/golang/functions.go) example. They can harm readability in longer functions.
+Naked return statements should be used only in short functions, as with the `split` function in the [functions.go](https://github.com/lopecillo/golang/blob/master/functions.go) example. They can harm readability in longer functions.
 
 ## Variables
 
 The `var` statement declares a list of variables; as in function argument lists, the type is last.
 
-A `var` statement can be at package or function level. We can see both in the [variables.go](https://github.com/lopecillo/golang/variables.go) example.
+A `var` statement can be at package or function level. We can see both in the [variables.go](https://github.com/lopecillo/golang/blob/master/variables.go) example.
 
 ### Initializers
 
@@ -113,7 +113,7 @@ float32 float64
 complex64 complex128
 ```
 
-The [variables.go](https://github.com/lopecillo/golang/variables.go) example shows variables of several types, and also that variable declarations may be "factored" into blocks, as with import statements.
+The [variables.go](https://github.com/lopecillo/golang/blob/master/variables.go) example shows variables of several types, and also that variable declarations may be "factored" into blocks, as with import statements.
 
 The `int`, `uint`, and `uintptr` types are usually 32 bits wide on 32-bit systems and 64 bits wide on 64-bit systems. When you need an integer value you should use `int` unless you have a specific reason to use a sized or unsigned integer type.
 
@@ -147,7 +147,7 @@ f := float64(i)
 u := uint(f)
 ```
 
-Unlike in C, in Go assignment between items of different type requires an explicit conversion. Try removing the `float64` or `uint` conversions in the [type-conversions.go](https://github.com/lopecillo/golang/type-conversions.go) example and see what happens.
+Unlike in C, in Go assignment between items of different type requires an explicit conversion. Try removing the `float64` or `uint` conversions in the [type-conversions.go](https://github.com/lopecillo/golang/blob/master/type-conversions.go) example and see what happens.
 
 ### Type inference
 
@@ -182,6 +182,6 @@ Numeric constants are high-precision *values*.
 
 An untyped constant takes the type needed by its context.
 
-Try printing `needInt(Big)` too.
+In the [numeric-constants.go](https://github.com/lopecillo/golang/blob/master/numeric-constants.go) example, try printing `needInt(Big)` too.
 
 (An `int` can store at maximum a 64-bit integer, and sometimes less.)
