@@ -4,15 +4,26 @@ Table of contents
 =================
 
 <!--ts-->
-   * [Golang](#golang)
-   * [Table of contents](#table-of-contents)
-   * [Packages](#packages)
-      * [Imports](#imports)
-      * [Exported names](#exported-names)
+* [Golang](#golang)
+* [Table of contents](#table-of-contents)
+* [Packages](#packages)
+  * [Imports](#imports)
+  * [Exported names](#exported-names)
+* [Functions](#functions)
+  * [Multiple results](#multiple-results)
+  * [Named result values](#named-result-values)
+* [Variables](#variables)
+  * [Initializers](#initializers)
+  * [Short variable declarations](#short-variable-declarations)
+  * [Basic types](#basic-types)
+  * [Zero values](#zero-values)
+  * [Type conversions](#type-conversions)
+  * [Type inference](#type-inference)
+  * [Constants](#constants)
+    * [Numeric constants](#numeric-constants)
 <!--te-->
 
-Packages
-========
+## Packages
 
 Every Go program is made up of packages.
 
@@ -188,7 +199,7 @@ Constants can be character, string, boolean, or numeric values.
 
 Constants cannot be declared using the `:=` syntax.
 
-### Numeric constants
+#### Numeric constants
 
 Numeric constants are high-precision *values*.
 
