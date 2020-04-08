@@ -1,6 +1,18 @@
 # Golang
 
-## Packages
+Table of contents
+=================
+
+<!--ts-->
+   * [Golang](#golang)
+   * [Table of contents](#table-of-contents)
+   * [Packages](#packages)
+      * [Imports](#imports)
+      * [Exported names](#exported-names)
+<!--te-->
+
+Packages
+========
 
 Every Go program is made up of packages.
 
