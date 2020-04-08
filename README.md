@@ -23,7 +23,7 @@
 * [Flow control](#flow-control)
   * [For](#for)
   * [If](#if)
-  * [Exercise: Loops and functions](#exercise-loops-and-functions)
+  * [*Exercise: Loops and functions*](#exercise-loops-and-functions)
   * [Switch](#switch)
   * [Defer](#defer)
 * [More types](#more-types)
@@ -39,13 +39,13 @@
     * [Creating a slice with make](#creating-a-slice-with-make)
     * [Appending to a slice](#appending-to-a-slice)
     * [Range](#range)
-    * [Exercise: Slices](#exercise-slices)
+    * [*Exercise: Slices*](#exercise-slices)
   * [Maps](#maps)
     * [Map literals](#map-literals)
     * [Mutating maps](#mutating-maps)
   * [Function values](#function-values)
   * [Function closures](#function-closures)
-  * [Exercise: Fibonacci closure](#exercise-fibonacci-closure)
+  * [*Exercise: Fibonacci closure*](#exercise-fibonacci-closure)
 <!--te-->
 
 ## Packages
@@ -54,13 +54,30 @@ Every Go program is made up of packages.
 
 Programs start running in package `main`.
 
-The [random.go](https://github.com/lopecillo/golang/blob/master/random.go) example is using the packages with import paths `"fmt"`, `"time"` and `"math/rand"`.
+The following example is using the packages with import paths `"fmt"` and `"math/rand"`:
+
+```golang
+package main
+
+import (
+   "fmt"
+   "math/rand"
+)
+```
 
 By convention, the package name is the same as the last element of the import path. For instance, the `"math/rand"` package comprises files that begin with the statement `package rand`.
 
 ### Imports
 
-Thie [random.go](https://github.com/lopecillo/golang/blob/master/random.go) example groups the imports into a parenthesized, "factored" import statement.
+The [random.go](https://github.com/lopecillo/golang/blob/master/random.go) example groups the imports into a parenthesized, "factored" import statement:
+
+```golang
+import (
+   "fmt"
+   "time"
+   "math/rand"
+)
+```
 
 You can also write multiple import statements, like:
 
@@ -79,13 +96,23 @@ In Go, a name is exported if it begins with a capital letter. For example, `Pizz
 
 When importing a package, you can refer only to its exported names. Any "unexported" names are not accessible from outside the package.
 
-In the [math.go](https://github.com/lopecillo/golang/blob/master/math.go) example, `math.Pi` works, but `math.pi` wouldn't.
+In the [math.go](https://github.com/lopecillo/golang/blob/master/math.go) example, `math.Pi` works, but `math.pi` wouldn't:
+
+```golang
+fmt.Println(math.Pi)
+```
 
 ## Functions
 
 A function can take zero or more arguments.
 
-In the [functions.go](https://github.com/lopecillo/golang/blob/master/functions.go) example, `add` takes two parameters of type `int`.
+In this example, `add` takes two parameters of type `int`:
+
+```golang
+func add(x int, y int) int {
+   return x + y
+}
+```
 
 Notice that the type comes *after* the variable name.
 
@@ -109,7 +136,13 @@ x, y int
 
 A function can return any number of results.
 
-The `swap` function returns two strings.
+The `swap` function returns two strings:
+
+```golang
+func swap(x, y string) (string, string) {
+   return y, x
+}
+```
 
 ### Named return values
 
@@ -119,13 +152,33 @@ These names should be used to document the meaning of the return values.
 
 A `return` statement without arguments returns the named return values. This is known as a "naked" return.
 
-Naked return statements should be used only in short functions, as with the `split` function in the [functions.go](https://github.com/lopecillo/golang/blob/master/functions.go) example. They can harm readability in longer functions.
+Naked return statements should be used only in short functions, as with this example:
+
+```golang
+func split(sum int) (x, y int) {
+   x = sum * 4 / 9
+   y = sum - x
+   return
+}
+```
+
+They can harm readability in longer functions.
 
 ## Variables
 
 The `var` statement declares a list of variables; as in function argument lists, the type is last.
 
-A `var` statement can be at package or function level. We can see both in the [variables.go](https://github.com/lopecillo/golang/blob/master/variables.go) example.
+A `var` statement can be at package or function level. We can see both in this example:
+
+```golang
+var c, python, java bool
+
+func main() {
+   var i int
+   fmt.Println(i, c, python, java)
+}
+
+```
 
 ### Initializers
 
@@ -135,7 +188,17 @@ If an initializer is present, the type can be omitted; the variable will take th
 
 ### Short variable declarations
 
-Inside a function, the `:=` short assignment statement can be used in place of a `var` declaration with implicit type.
+Inside a function, the `:=` short assignment statement can be used in place of a `var` declaration with implicit type:
+
+```golang
+func main() {
+   var i, j int = 1, 2
+   k := 3
+   c, python, java := true, false, "no!"
+
+   fmt.Println(i, j, k, c, python, java)
+}
+```
 
 Outside a function, every statement begins with a keyword (`var`, `func`, and so on) and so the `:=` construct is not available.
 
@@ -161,7 +224,15 @@ float32 float64
 complex64 complex128
 ```
 
-The [variables.go](https://github.com/lopecillo/golang/blob/master/variables.go) example shows variables of several types, and also that variable declarations may be "factored" into blocks, as with import statements.
+This example shows variables of several types, and also that variable declarations may be "factored" into blocks, as with import statements:
+
+```golang
+var (
+   ToBe   bool       = false
+   MaxInt uint64     = 1<<64 - 1
+   z      complex128 = cmplx.Sqrt(-5 + 12i)
+)
+```
 
 The `int`, `uint`, and `uintptr` types are usually 32 bits wide on 32-bit systems and 64 bits wide on 64-bit systems. When you need an integer value you should use `int` unless you have a specific reason to use a sized or unsigned integer type.
 
@@ -246,6 +317,13 @@ The basic `for` loop has three components separated by semicolons:
 * the condition expression: evaluated before every iteration
 * the post statement: executed at the end of every iteration
 
+```golang
+sum := 0
+for i := 0; i < 10; i++ {
+   sum += i
+}
+```
+
 The init statement will often be a short variable declaration, and the variables declared there are visible only in the scope of the `for` statement.
 
 The loop will stop iterating once the boolean condition evaluates to `false`.
@@ -254,17 +332,44 @@ The loop will stop iterating once the boolean condition evaluates to `false`.
 
 The init and post statements are optional. At that point you can drop the semicolons: C's `while` is spelled `for` in Go.
 
+```golang
+sum := 1
+for sum < 1000 {
+   sum += sum
+}
+```
+
 If you omit the loop condition it loops forever, so an infinite loop is compactly expressed.
+
+```golang
+for {
+}
+```
 
 ### If
 
 Go's `if` statements are like its `for` loops; the expression need not be surrounded by parentheses `( )` but the braces `{ }` are required.
 
-Like `for`, the `if` statement can start with a short statement to execute before the condition.
+```golang
+if x < 0 {
+   return -x
+}
+```
+
+Like `for`, the `if` statement can start with a short statement to execute before the condition:
+
+```golang
+if v := math.Pow(x, n); v < lim {
+   return v
+} else {
+   fmt.Printf("%g >= %g\n", v, lim)
+}
+return lim
+```
 
 Variables declared by the statement are only in scope until the end of the `if`.
 
-In the [if.go](https://github.com/lopecillo/golang/blob/master/if.go) example, `lim` must be used because `v` is not visible outside the scope of the `if` statement.
+In the example above, `lim` must be used because `v` is not visible outside the scope of the `if` statement.
 
 Variables declared inside an `if` short statement are also available inside any of the `else` blocks.
 
@@ -299,11 +404,25 @@ You can find a possible solution in [exercise-loops.go](https://github.com/lopec
 
 A `switch` statement is a shorter way to write a sequence of `if - else` statements. It runs the first case whose value is equal to the condition expression.
 
+```golang
+fmt.Print("Go runs on ")
+switch os := runtime.GOOS; os {
+case "darwin":
+   fmt.Println("OS X.")
+case "linux":
+   fmt.Println("Linux.")
+default:
+   // freebsd, openbsd,
+   // plan9, windows...
+   fmt.Printf("%s.\n", os)
+}
+```
+
 Go's switch is like the one in C, C++, Java, JavaScript, and PHP, except that Go only runs the selected case, not all the cases that follow. In effect, the `break` statement that is needed at the end of each case in those languages is provided automatically in Go. Another important difference is that Go's switch cases need not be constants, and the values involved need not be integers.
 
 Switch cases evaluate cases from top to bottom, stopping when a case succeeds.
 
-(For example, in [switch.go](https://github.com/lopecillo/golang/blob/master/switch.go)
+(For example,
 
 ```golang
 switch i {
@@ -316,13 +435,32 @@ does not call `f` if `i==0`.)
 
 A switch without a condition is the same as `switch true`.
 
-This construct can be a clean way to write long if-then-else chains.
+This construct can be a clean way to write long if-then-else chains:
+
+```golang
+t := time.Now()
+switch {
+case t.Hour() < 12:
+   fmt.Println("Good morning!")
+case t.Hour() < 17:
+   fmt.Println("Good afternoon.")
+default:
+   fmt.Println("Good evening.")
+}
+```
 
 ### Defer
 
 A `defer` statement defers the execution of a function until the surrounding function returns.
 
-The deferred call's arguments are evaluated immediately, but the function call is not executed until the surrounding function returns.
+The deferred call's arguments are evaluated immediately, but the function call is not executed until the surrounding function returns:
+
+```golang
+func main() {
+   defer fmt.Println("world")
+   fmt.Println("hello")
+}
+```
 
 Deferred function calls are pushed onto a stack. When a function returns, its deferred calls are executed in last-in-first-out order.
 
@@ -360,13 +498,30 @@ Unlike C, Go has no pointer arithmetic.
 
 ### Structs
 
-A `struct` is a collection of fields.
+A `struct` is a collection of fields:
 
-Struct fields are accessed using a dot.
+```golang
+type Vertex struct {
+   X int
+   Y int
+}
+```
+
+Struct fields are accessed using a dot:
+
+```golang
+v.X = 4
+```
 
 Struct fields can be accessed through a struct pointer.
 
-To access the field `X` of a struct when we have the struct pointer `p` we could write `(*p).X`. However, that notation is cumbersome, so the language permits us instead to write just `p.X`, without the explicit dereference.
+To access the field `X` of a struct when we have the struct pointer `p` we could write `(*p).X`. However, that notation is cumbersome, so the language permits us instead to write just `p.X`, without the explicit dereference:
+
+```golang
+v := Vertex{1, 2}
+p := &v
+p.X = 1e9
+```
 
 #### Struct literals
 
@@ -375,6 +530,15 @@ A struct literal denotes a newly allocated struct value by listing the values of
 You can list just a subset of fields by using the `Name:` syntax. (And the order of named fields is irrelevant.)
 
 The special prefix `&` returns a pointer to the struct value.
+
+```golang
+var (
+   v1 = Vertex{1, 2}  // has type Vertex
+   v2 = Vertex{X: 1}  // Y:0 is implicit
+   v3 = Vertex{}      // X:0 and Y:0
+   p  = &Vertex{1, 2} // has type *Vertex
+)
+```
 
 ### Arrays
 
@@ -463,7 +627,7 @@ The length of a slice is the number of elements it contains.
 
 The capacity of a slice is the number of elements in the underlying array, counting from the first element in the slice.
 
-The length and capacity of a slice s can be obtained using the expressions `len(s)` and `cap(s)`.
+The length and capacity of a slice `s` can be obtained using the expressions `len(s)` and `cap(s)`.
 
 You can extend a slice's length by re-slicing it, provided it has sufficient capacity. Try changing one of the slice operations in the [array.go](https://github.com/lopecillo/golang/blob/master/array.go) example to extend it beyond its capacity and see what happens.
 
@@ -514,6 +678,13 @@ The `range` form of the `for` loop iterates over a slice or map.
 
 When ranging over a slice, two values are returned for each iteration. The first is the index, and the second is a copy of the element at that index.
 
+```golang
+var pow = []int{1, 2, 4, 8, 16, 32, 64, 128}
+for i, v := range pow {
+   fmt.Printf("2**%d = %d\n", i, v)
+}
+```
+
 You can skip the index or value by assigning to `_`.
 
 ```golang
@@ -548,15 +719,45 @@ You can also find the images generated for:
 
 A map maps keys to values.
 
+```golang
+type Vertex struct {
+   Lat, Long float64
+}
+
+var m map[string]Vertex
+```
+
 The zero value of a map is `nil`. A `nil` map has no keys, nor can keys be added.
 
 The `make` function returns a map of the given type, initialized and ready for use.
+
+```golang
+m = make(map[string]Vertex)
+```
 
 #### Map literals
 
 Map literals are like struct literals, but the keys are required.
 
+```golang
+var m = map[string]Vertex{
+   "Bell Labs": Vertex{
+      40.68433, -74.39967,
+   },
+   "Google": Vertex{
+      37.42202, -122.08408,
+   },
+}
+```
+
 If the top-level type is just a type name, you can omit it from the elements of the literal.
+
+```golang
+var m = map[string]Vertex{
+   "Bell Labs": {40.68433, -74.39967},
+   "Google":    {37.42202, -122.08408},
+}
+```
 
 #### Mutating maps
 
@@ -608,11 +809,27 @@ Functions are values too. They can be passed around just like other values.
 
 Function values may be used as function arguments and return values.
 
+```golang
+func compute(fn func(float64, float64) float64) float64 {
+   return fn(3, 4)
+}
+```
+
 ### Function closures
 
 Go functions may be closures. A closure is a function value that references variables from outside its body. The function may access and assign to the referenced variables; in this sense the function is "bound" to the variables.
 
-For example, the `adder` function in [function-closures.go](https://github.com/lopecillo/golang/blob/master/function-closures.go) returns a closure. Each closure is bound to its own `sum` variable.
+For example, the `adder` function returns a closure. Each closure is bound to its own `sum` variable.
+
+```golang
+func adder() func(int) int {
+   sum := 0
+   return func(x int) int {
+      sum += x
+      return sum
+   }
+}
+```
 
 ### *Exercise: Fibonacci closure*
 
