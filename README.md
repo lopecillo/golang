@@ -1387,9 +1387,10 @@ method such that `ErrNegativeSqrt(-2).Error()` returns `"cannot Sqrt negative nu
 
 <details>
   <summary>Why?</summary>
-fmt.Sprint(e) will call e.Error() to convert the value e to a string. If the Error() method calls fmt.Sprint(e), then the program recurses until out of memory.
 
-You can break the recursion by converting the e to a value without a String or Error method.
+`fmt.Sprint(e)` will call `e.Error()` to convert the value `e` to a string. If the `Error()` method calls `fmt.Sprint(e)`, then the program recurses until out of memory.
+
+You can break the recursion by converting the `e` to a value without a `String` or `Error` method.
 </details>
 
 Change your `Sqrt` function to return an `ErrNegativeSqrt` value when given a negative number.
