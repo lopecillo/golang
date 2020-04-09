@@ -792,12 +792,11 @@ The choice of image is up to you. Interesting functions include `(x+y)/2`, `x*y`
 You can find a possible solution in [exercise-slices.go](https://github.com/lopecillo/golang/blob/master/more-types/exercise-slices.go).
 You can also check the images generated for:
 
-* `(x+y)/2`
-![`(x+y)/2`](https://github.com/lopecillo/golang/blob/master/more-types/x_y_average.png)
-* `x*y`
-![`x*y`](https://github.com/lopecillo/golang/blob/master/more-types/x_times_y.png)
-* `x^y`
-![`x^y`](https://github.com/lopecillo/golang/blob/master/more-types/x_power_y.png)
+| Function  | Output                                                                                 |
+|:---------:|:--------------------------------------------------------------------------------------:|
+| `(x+y)/2` | ![(x+y)/2](https://github.com/lopecillo/golang/blob/master/more-types/x_y_average.png) |
+| `x*y`     | ![x*y](https://github.com/lopecillo/golang/blob/master/more-types/x_times_y.png)       |
+| `x^y`     | ![x^y](https://github.com/lopecillo/golang/blob/master/more-types/x_power_y.png)       |
 
 ### Maps
 
@@ -1525,6 +1524,7 @@ func main() {
 `At` should return a color; the value `v` in the last picture generator corresponds to `color.RGBA{v, v, 255, 255}` in this one.
 
 The output should look very similar to this:
+
 ![rectangle](https://github.com/lopecillo/golang/blob/master/images/exercise-images.png)
 
 You can find a possible solution in [exercise-images.go](https://github.com/lopecillo/golang/blob/master/images/exercise-images.go).
