@@ -18,10 +18,10 @@ func Sqrt(x float64) (float64, error) {
 	var (
 		z          float64 = x / 2
 		accuracy   float64 = 1e-12
-		iterations    uint
+		iterations uint
 	)
-	for iterations = 0; math.Abs(z*z - x) > accuracy; iterations++ {
-		z -= (z*z - x) / (2*z)
+	for iterations = 0; math.Abs(z*z-x) > accuracy; iterations++ {
+		z -= (z*z - x) / (2 * z)
 	}
 	fmt.Printf("Value after %v iterations with %v accuracy:\n", iterations, accuracy)
 	return z, nil

@@ -55,9 +55,15 @@
   * [The empty interface values](#the-empty-interface)
   * [Type assertions](#type-assertions)
   * [Type switches](#type-switches)
-  * [Stringers](#stringers)
-    * [*Exercise: Stringers*](#exercise-stringers)
+* [Stringers](#stringers)
+  * [*Exercise: Stringers*](#exercise-stringers)
 * [Errors](#errors)
+  * [*Exercise: Errors*](#exercise-errors)
+* [Readers](#readers)
+  * [*Exercise: Readers*](#exercise-readers)
+  * [*Exercise: rot13Reader*](#exercise-rot13reader)
+* [Images](#images)
+  * [*Exercise: Images*](#exercise-images)
 * [Concurrency](#concurrency)
   * [Goroutines](#goroutines)
   * [Channels](#channels)
@@ -92,13 +98,12 @@ By convention, the package name is the same as the last element of the import pa
 
 ### Imports
 
-The [random.go](https://github.com/lopecillo/golang/blob/master/random.go) example groups the imports into a parenthesized, "factored" import statement:
+This example groups the imports into a parenthesized, "factored" import statement:
 
 ```golang
 import (
    "fmt"
-   "time"
-   "math/rand"
+   "math"
 )
 ```
 
@@ -119,10 +124,19 @@ In Go, a name is exported if it begins with a capital letter. For example, `Pizz
 
 When importing a package, you can refer only to its exported names. Any "unexported" names are not accessible from outside the package.
 
-In the [math.go](https://github.com/lopecillo/golang/blob/master/math.go) example, `math.Pi` works, but `math.pi` wouldn't:
+In this example, `math.Pi` works, but `math.pi` wouldn't:
 
 ```golang
-fmt.Println(math.Pi)
+package main
+
+import (
+   "fmt"
+   "math"
+)
+
+func main() {
+   fmt.Println(math.Pi)
+}
 ```
 
 ## Functions
@@ -143,7 +157,23 @@ Notice that the type comes *after* the variable name.
 
 When two or more consecutive named function parameters share a type, you can omit the type from all but the last.
 
-In the [functions.go](https://github.com/lopecillo/golang/blob/master/functions.go) example, we shortened
+In this example:
+
+```golang
+package main
+
+import "fmt"
+
+func add(x, y int) int {
+   return x + y
+}
+
+func main() {
+   fmt.Println(add(42, 13))
+}
+```
+
+we shortened
 
 ```golang
 x int, y int
@@ -289,7 +319,7 @@ f := float64(i)
 u := uint(f)
 ```
 
-Unlike in C, in Go assignment between items of different type requires an explicit conversion. Try removing the `float64` or `uint` conversions in the [type-conversions.go](https://github.com/lopecillo/golang/blob/master/type-conversions.go) example and see what happens.
+Unlike in C, in Go assignment between items of different type requires an explicit conversion. Try removing the `float64` or `uint` conversions in the [type-conversions.go](https://github.com/lopecillo/golang/blob/master/variables/type-conversions.go) example and see what happens.
 
 ### Type inference
 
@@ -324,7 +354,7 @@ Numeric constants are high-precision *values*.
 
 An untyped constant takes the type needed by its context.
 
-In the [numeric-constants.go](https://github.com/lopecillo/golang/blob/master/numeric-constants.go) example, try printing `needInt(Big)` too.
+In the [numeric-constants.go](https://github.com/lopecillo/golang/blob/master/variables/numeric-constants.go) example, try printing `needInt(Big)` too.
 
 (An `int` can store at maximum a 64-bit integer, and sometimes less.)
 
@@ -408,6 +438,21 @@ z -= (z*z - x) / (2*z)
 
 Repeating this adjustment makes the guess better and better until we reach an answer that is as close to the actual square root as can be.
 
+```golang
+package main
+
+import (
+   "fmt"
+)
+
+func Sqrt(x float64) float64 {
+}
+
+func main() {
+   fmt.Println(Sqrt(2))
+}
+```
+
 Implement this in the `func Sqrt` provided. A decent starting guess for z is 1, no matter what the input. To begin with, repeat the calculation 10 times and print each z along the way. See how close you get to the answer for various values of x (1, 2, 3, ...) and how quickly the guess improves.
 
 Hint: To declare and initialize a floating point value, give it floating point syntax or use a conversion:
@@ -421,7 +466,7 @@ Next, change the loop condition to stop once the value has stopped changing (or 
 
 (**Note:** If you are interested in the details of the algorithm, the z² − x above is how far away z² is from where it needs to be (x), and the division by 2z is the derivative of z², to scale how much we adjust z by how quickly z² is changing. This general approach is called [Newton's method](https://en.wikipedia.org/wiki/Newton%27s_method). It works well for many functions but especially well for square root.)
 
-You can find a possible solution in [exercise-loops.go](https://github.com/lopecillo/golang/blob/master/exercise-loops.go).
+You can find a possible solution in [exercise-loops.go](https://github.com/lopecillo/golang/blob/master/flow-control/exercise-loops.go).
 
 ### Switch
 
@@ -652,7 +697,7 @@ The capacity of a slice is the number of elements in the underlying array, count
 
 The length and capacity of a slice `s` can be obtained using the expressions `len(s)` and `cap(s)`.
 
-You can extend a slice's length by re-slicing it, provided it has sufficient capacity. Try changing one of the slice operations in the [array.go](https://github.com/lopecillo/golang/blob/master/array.go) example to extend it beyond its capacity and see what happens.
+You can extend a slice's length by re-slicing it, provided it has sufficient capacity. Try changing one of the slice operations in the [slices.go](https://github.com/lopecillo/golang/blob/master/more-types/slices.go) example to extend it beyond its capacity and see what happens.
 
 #### Nil slices
 
@@ -723,6 +768,19 @@ for i := range pow
 
 #### *Exercise: Slices*
 
+```golang
+package main
+
+import "golang.org/x/tour/pic"
+
+func Pic(dx, dy int) [][]uint8 {
+}
+
+func main() {
+   pic.Show(Pic)
+}
+```
+
 Implement `Pic`. It should return a slice of length `dy`, each element of which is a slice of `dx` 8-bit unsigned integers. When you run the program, it will display your picture, interpreting the integers as grayscale (well, bluescale) values.
 
 The choice of image is up to you. Interesting functions include `(x+y)/2`, `x*y`, and `x^y`.
@@ -731,12 +789,15 @@ The choice of image is up to you. Interesting functions include `(x+y)/2`, `x*y`
 
 (Use `uint8(intValue)` to convert between types.)
 
-You can find a possible solution in [exercise-slices.go](https://github.com/lopecillo/golang/blob/master/exercise-slices.go).
-You can also find the images generated for:
+You can find a possible solution in [exercise-slices.go](https://github.com/lopecillo/golang/blob/master/more-types/exercise-slices.go).
+You can also check the images generated for:
 
-* [`(x+y)/2`](https://github.com/lopecillo/golang/blob/master/x_y_average.png)
-* [`x*y`](https://github.com/lopecillo/golang/blob/master/x_times_y.png)
-* [`x^y`](https://github.com/lopecillo/golang/blob/master/x_power_y.png)
+* `(x+y)/2`
+![`(x+y)/2`](https://github.com/lopecillo/golang/blob/master/more-types/x_y_average.png)
+* `x*y`
+![`x*y`](https://github.com/lopecillo/golang/blob/master/more-types/x_times_y.png)
+* `x^y`
+![`x^y`](https://github.com/lopecillo/golang/blob/master/more-types/x_power_y.png)
 
 ### Maps
 
@@ -820,11 +881,27 @@ elem, ok := m[key]
 
 #### *Exercise: Maps*
 
-Implement WordCount in [exercise-maps.go](https://github.com/lopecillo/golang/blob/master/exercise-maps.go). It should return a map of the counts of each “word” in the string `s`. The `wc.Test` function runs a test suite against the provided function and prints success or failure.
+```golang
+package main
+
+import (
+   "golang.org/x/tour/wc"
+)
+
+func WordCount(s string) map[string]int {
+   return map[string]int{"x": 1}
+}
+
+func main() {
+   wc.Test(WordCount)
+}
+```
+
+Implement `WordCount`. It should return a map of the counts of each “word” in the string `s`. The `wc.Test` function runs a test suite against the provided function and prints success or failure.
 
 You might find [strings.Fields](https://golang.org/pkg/strings/#Fields) helpful.
 
-You can find a possible solution in [exercise-maps.go](https://github.com/lopecillo/golang/blob/master/exercise-maps.go).
+You can find a possible solution in [exercise-maps.go](https://github.com/lopecillo/golang/blob/master/more-types/exercise-maps.go).
 
 ### Function values
 
@@ -860,7 +937,25 @@ Let's have some fun with functions.
 
 Implement a `fibonacci` function that returns a function (a closure) that returns successive [Fibonacci numbers](https://en.wikipedia.org/wiki/Fibonacci_number) (0, 1, 1, 2, 3, 5, ...).
 
-You can find a possible solution in [exercise-fibonacci-closure.go](https://github.com/lopecillo/golang/blob/master/exercise-fibonacci-closure.go).
+```golang
+package main
+
+import "fmt"
+
+// fibonacci is a function that returns
+// a function that returns an int.
+func fibonacci() func() int {
+}
+
+func main() {
+   f := fibonacci()
+   for i := 0; i < 10; i++ {
+      fmt.Println(f())
+   }
+}
+```
+
+You can find a possible solution in [exercise-fibonacci-closure.go](https://github.com/lopecillo/golang/blob/master/more-types/exercise-fibonacci-closure.go).
 
 ## Methods
 
@@ -934,7 +1029,7 @@ func (v *Vertex) Scale(f float64) {
 
 Methods with pointer receivers can modify the value to which the receiver points (as `Scale` does here). Since methods often need to modify their receiver, pointer receivers are more common than value receivers.
 
-Try removing the `*` from the declaration of the `Scale` function on [methods.go](https://github.com/lopecillo/golang/blob/master/methods.go) and observe how the program's behavior changes.
+Try removing the `*` from the declaration of the `Scale` function on [methods.go](https://github.com/lopecillo/golang/blob/master/methods/methods.go) and observe how the program's behavior changes.
 
 With a value receiver, the `Scale` method operates on a copy of the original `Vertex` value. (This is the same behavior as for any other function argument.) The `Scale` method must have a pointer receiver to change the Vertex value declared in the `main` function.
 
@@ -1043,6 +1138,8 @@ func (v *Vertex) Abs() float64 {
 A type implements an interface by implementing its methods. There is no explicit declaration of intent, no "implements" keyword.
 
 ```golang
+package main
+
 import "fmt"
 
 type I interface {
@@ -1183,7 +1280,7 @@ The declaration in a type switch has the same syntax as a type assertion `i.(T)`
 
 This switch statement tests whether the interface value `i` holds a value of type `T` or `S`. In each of the `T` and `S` cases, the variable `v` will be of type `T` or `S` respectively and hold the value held by `i`. In the default case (where there is no match), the variable `v` is of the same interface type and value as `i`.
 
-### Stringers
+## Stringers
 
 One of the most ubiquitous interfaces is `Stringer` defined by the `fmt` package.
 
@@ -1195,13 +1292,33 @@ type Stringer interface {
 
 A `Stringer` is a type that can describe itself as a string. The `fmt` package (and many others) look for this interface to print values.
 
-#### Exercise: Stringers
+### *Exercise: Stringers*
+
+```golang
+package main
+
+import "fmt"
+
+type IPAddr [4]byte
+
+// TODO: Add a "String() string" method to IPAddr.
+
+func main() {
+   hosts := map[string]IPAddr{
+      "loopback":  {127, 0, 0, 1},
+      "googleDNS": {8, 8, 8, 8},
+   }
+   for name, ip := range hosts {
+      fmt.Printf("%v: %v\n", name, ip)
+   }
+}
+```
 
 Make the `IPAddr` type implement `fmt.Stringer` to print the address as a dotted quad.
 
 For instance, `IPAddr{1, 2, 3, 4}` should print as `"1.2.3.4"`.
 
-You can find a possible solution in [exercise-stringer.go](https://github.com/lopecillo/golang/blob/master/exercise-stringer.go).
+You can find a possible solution in [exercise-stringer.go](https://github.com/lopecillo/golang/blob/master/stringers/exercise-stringer.go).
 
 ## Errors
 
@@ -1229,6 +1346,188 @@ fmt.Println("Converted integer:", i)
 ```
 
 A `nil` error denotes success; a non-nil `error` denotes failure.
+
+### *Exercise: Errors*
+
+Copy the `Sqrt` function from [exercise-loops.go](https://github.com/lopecillo/golang/blob/master/flow-control/exercise-loops.go) and modify it to return an `error` value.
+
+```golang
+package main
+
+import (
+   "fmt"
+)
+
+func Sqrt(x float64) (float64, error) {
+   return 0, nil
+}
+
+func main() {
+   fmt.Println(Sqrt(2))
+   fmt.Println(Sqrt(-2))
+}
+```
+
+`Sqrt` should return a non-nil error value when given a negative number, as it doesn't support complex numbers.
+
+Create a new type
+
+```golang
+type ErrNegativeSqrt float64
+```
+
+and make it an `error` by giving it a
+
+```golang
+func (e ErrNegativeSqrt) Error() string
+```
+
+method such that `ErrNegativeSqrt(-2).Error()` returns `"cannot Sqrt negative number: -2"`.
+
+**Note:** A call to `fmt.Sprint(e)` inside the Error method will send the program into an infinite loop. You can avoid this by converting `e` first: `fmt.Sprint(float64(e))`.
+
+<details>
+  <summary>Why?</summary>
+`fmt.Sprint(e)` will call `e.Error()` to convert the value `e` to a string. If the `Error()` method calls `fmt.Sprint(e)`, then the program recurses until out of memory.
+
+You can break the recursion by converting the `e` to a value without a `String` or `Error` method.
+</details>
+
+Change your `Sqrt` function to return an `ErrNegativeSqrt` value when given a negative number.
+
+You can find a possible solution in [exercise-errors.go](https://github.com/lopecillo/golang/blob/master/errors/exercise-errors.go).
+
+## Readers
+
+The `io` package specifies the `io.Reader` interface, which represents the read end of a stream of data.
+
+The Go standard library contains [many implementations](https://golang.org/search?q=Read#Global) of these interfaces, including files, network connections, compressors, ciphers, and others.
+
+The `io.Reader` interface has a `Read` method:
+
+```golang
+func (T) Read(b []byte) (n int, err error)
+```
+
+`Read` populates the given byte slice with data and returns the number of bytes populated and an error value. It returns an `io.EOF` error when the stream ends.
+
+The example code creates a `strings.Reader` and consumes its output 8 bytes at a time:
+
+```golang
+r := strings.NewReader("Hello, Reader!")
+
+b := make([]byte, 8)
+for {
+   n, err := r.Read(b)
+   fmt.Printf("n = %v err = %v b = %v\n", n, err, b)
+   fmt.Printf("b[:n] = %q\n", b[:n])
+   if err == io.EOF {
+      break
+   }
+}
+```
+
+### *Exercise: Readers*
+
+Implement a `Reader` type that emits an infinite stream of the ASCII character `'A'`.
+
+```golang
+package main
+
+import "golang.org/x/tour/reader"
+
+type MyReader struct{}
+
+// TODO: Add a Read([]byte) (int, error) method to MyReader.
+
+func main() {
+   reader.Validate(MyReader{})
+}
+```
+
+You can find a possible solution in [exercise-reader.go](https://github.com/lopecillo/golang/blob/master/readers/exercise-reader.go).
+
+### *Exercise: rot13Reader*
+
+A common pattern is an [io.Reader](https://golang.org/pkg/io/#Reader) that wraps another `io.Reader`, modifying the stream in some way.
+
+For example, the [gzip.NewReader](https://golang.org/pkg/compress/gzip/#NewReader) function takes an `io.Reader` (a stream of compressed data) and returns a `*gzip.Reader` that also implements `io.Reader` (a stream of the decompressed data).
+
+Implement a `rot13Reader` that implements `io.Reader` and reads from an `io.Reader`, modifying the stream by applying the [rot13](https://en.wikipedia.org/wiki/ROT13) substitution cipher to all alphabetical characters.
+
+The `rot13Reader` type is provided for you. Make it an `io.Reader` by implementing its `Read` method.
+
+```golang
+package main
+
+import (
+   "io"
+   "os"
+   "strings"
+)
+
+type rot13Reader struct {
+   r io.Reader
+}
+
+func main() {
+   s := strings.NewReader("Lbh penpxrq gur pbqr!")
+   r := rot13Reader{s}
+   io.Copy(os.Stdout, &r)
+}
+```
+
+You can find a possible solution in [exercise-rot13-reader.go](https://github.com/lopecillo/golang/blob/master/readers/exercise-rot13-reader.go).
+
+## Images
+
+[Package image](https://golang.org/pkg/image/#Image) defines the `Image` interface:
+
+```golang
+package image
+
+type Image interface {
+   ColorModel() color.Model
+   Bounds() Rectangle
+   At(x, y int) color.Color
+}
+```
+
+**Note:** the `Rectangle` return value of the `Bounds` method is actually an `image.Rectangle`, as the declaration is inside package `image`.
+
+(See [the documentation](https://golang.org/pkg/image/#Image) for all the details.)
+
+The `color.Color` and `color.Model` types are also interfaces, but we'll ignore that by using the predefined implementations `color.RGBA` and `color.RGBAModel`. These interfaces and types are specified by the [image/color package](https://golang.org/pkg/image/color/).
+
+### *Exercise: Images*
+
+Remember the [picture generator](https://github.com/lopecillo/golang/blob/master/more-types/exercise-slices.go) we wrote earlier? Let's write another one, but this time it will return an implementation of `image.Image` instead of a slice of data.
+
+Define your own `Image` type, implement the necessary methods, and call `pic.ShowImage`.
+
+```golang
+package main
+
+import "golang.org/x/tour/pic"
+
+type Image struct{}
+
+func main() {
+   m := Image{}
+   pic.ShowImage(m)
+}
+```
+
+`Bounds` should return a `image.Rectangle`, like `image.Rect(0, 0, w, h)`.
+
+`ColorModel` should return `color.RGBAModel`.
+
+`At` should return a color; the value `v` in the last picture generator corresponds to `color.RGBA{v, v, 255, 255}` in this one.
+
+The output should look very similar to this:
+![rectangle](https://github.com/lopecillo/golang/blob/master/images/exercise-images.png)
+
+You can find a possible solution in [exercise-images.go](https://github.com/lopecillo/golang/blob/master/images/exercise-images.go).
 
 ## Concurrency
 
@@ -1346,7 +1645,7 @@ default:
 
 There can be many different binary trees with the same sequence of values stored in it. For example, here are two binary trees storing the sequence 1, 1, 2, 3, 5, 8, 13.
 
-[Example binary trees](https://tour.golang.org/content/img/tree.png)
+![Example binary trees](https://tour.golang.org/content/img/tree.png)
 
 A function to check whether two binary trees store the same sequence is quite complex in most languages. We'll use Go's concurrency and channels to write a simple solution.
 
@@ -1379,9 +1678,9 @@ func main() {
 }
 ```
 
-1. Implement the `Walk` function.
+**1.** Implement the `Walk` function.
 
-2. Test the `Walk` function.
+**2.** Test the `Walk` function.
 
 The function `tree.New(k)` constructs a randomly-structured (but always sorted) binary tree holding the values `k`, `2k`, `3k`, ..., `10k`.
 
@@ -1393,15 +1692,15 @@ go Walk(tree.New(1), ch)
 
 Then read and print 10 values from the channel. It should be the numbers 1, 2, 3, ..., 10.
 
-3. Implement the `Same` function using `Walk` to determine whether `t1` and `t2` store the same values.
+**3.** Implement the `Same` function using `Walk` to determine whether `t1` and `t2` store the same values.
 
-4. Test the `Same` function.
+**4.** Test the `Same` function.
 
 `Same(tree.New(1), tree.New(1))` should return `true`, and `Same(tree.New(1), tree.New(2))` should return `false`.
 
 The documentation for `Tree` can be found [here](https://godoc.org/golang.org/x/tour/tree#Tree).
 
-You can find a possible solution in [exercise-equivalent-binary-trees.go](https://github.com/lopecillo/golang/blob/master/exercise-equivalent-binary-trees.go).
+You can find a possible solution in [exercise-equivalent-binary-trees.go](https://github.com/lopecillo/golang/blob/master/concurrency/exercise-equivalent-binary-trees.go).
 
 ### sync.Mutex
 
@@ -1560,7 +1859,7 @@ var fetcher = fakeFetcher{
 }
 ```
 
-You can find a possible solution in [exercise-web-crawler.go](https://github.com/lopecillo/golang/blob/master/exercise-web-crawler.go).
+You can find a possible solution in [exercise-web-crawler.go](https://github.com/lopecillo/golang/blob/master/concurrency/exercise-web-crawler.go).
 
 ## Where to *Go* from here...
 
