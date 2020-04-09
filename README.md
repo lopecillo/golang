@@ -58,6 +58,17 @@
   * [Stringers](#stringers)
     * [*Exercise: Stringers*](#exercise-stringers)
 * [Errors](#errors)
+* [Concurrency](#concurrency)
+  * [Goroutines](#goroutines)
+  * [Channels](#channels)
+    * [Buffered channels](#buffered-channels)
+    * [Range and close](#range-and-close)
+  * [Select](#select)
+    * [Default selection](#default-selection)
+  * [*Exercise: Equivalent binary trees*](#exercise-equivalent-binary-trees)
+  * [sync.Mutex](#sync-mutex)
+  * [*Exercise: Web Crawler*](#exercise-web-crawler)
+* [Where to *Go* from here...](#where-to-go-from-here)
 <!--te-->
 
 ## Packages
@@ -1218,3 +1229,353 @@ fmt.Println("Converted integer:", i)
 ```
 
 A `nil` error denotes success; a non-nil `error` denotes failure.
+
+## Concurrency
+
+### Goroutines
+
+A *goroutine* is a lightweight thread managed by the Go runtime.
+
+```golang
+go f(x, y, z)
+```
+
+starts a new goroutine running
+
+```golang
+f(x, y, z)
+```
+
+The evaluation of `f`, `x`, `y`, and `z` happens in the current goroutine and the execution of `f` happens in the new goroutine.
+
+Goroutines run in the same address space, so access to shared memory must be synchronized. The `sync` package provides useful primitives, although you won't need them much in Go as there are other primitives.
+
+### Channels
+
+Channels are a typed conduit through which you can send and receive values with the channel operator, `<-`.
+
+```golang
+ch <- v    // Send v to channel ch.
+v := <-ch  // Receive from ch, and
+           // assign value to v.
+```
+
+(The data flows in the direction of the arrow.)
+
+Like maps and slices, channels must be created before use:
+
+```golang
+ch := make(chan int)
+```
+
+By default, sends and receives block until the other side is ready. This allows goroutines to synchronize without explicit locks or condition variables.
+
+The example code sums the numbers in a slice, distributing the work between two goroutines. Once both goroutines have completed their computation, it calculates the final result.
+
+```golang
+func sum(s []int, c chan int) {
+   sum := 0
+   for _, v := range s {
+      sum += v
+   }
+   c <- sum // send sum to c
+}
+
+func main() {
+   s := []int{7, 2, 8, -9, 4, 0}
+
+   c := make(chan int)
+   go sum(s[:len(s)/2], c)
+   go sum(s[len(s)/2:], c)
+   x, y := <-c, <-c // receive from c
+
+   fmt.Println(x, y, x+y)
+}
+```
+
+#### Buffered channels
+
+Channels can be *buffered*. Provide the buffer length as the second argument to `make` to initialize a buffered channel:
+
+```golang
+ch := make(chan int, 100)
+```
+
+Sends to a buffered channel block only when the buffer is full. Receives block when the buffer is empty.
+
+Trying to overfill the buffer will trigger a fatal error (deadlock).
+
+#### Range and close
+
+A sender can `close` a channel to indicate that no more values will be sent. Receivers can test whether a channel has been closed by assigning a second parameter to the receive expression: after
+
+```golang
+v, ok := <-ch
+```
+
+`ok` is `false` if there are no more values to receive and the channel is closed.
+
+The loop `for i := range c` receives values from the channel repeatedly until it is closed.
+
+**Note:** Only the sender should close a channel, never the receiver. Sending on a closed channel will cause a panic.
+
+**Another note:** Channels aren't like files; you don't usually need to close them. Closing is only necessary when the receiver must be told there are no more values coming, such as to terminate a `range` loop.
+
+### Select
+
+The `select` statement lets a goroutine wait on multiple communication operations.
+
+A `select` blocks until one of its cases can run, then it executes that case. It chooses one at random if multiple are ready.
+
+#### Default selection
+
+The `default` case in a `select` is run if no other case is ready.
+
+Use a `default` case to try a send or receive without blocking:
+
+```golang
+select {
+case i := <-c:
+   // use i
+default:
+   // receiving from c would block
+}
+```
+
+### *Exercise: Equivalent binary trees*
+
+There can be many different binary trees with the same sequence of values stored in it. For example, here are two binary trees storing the sequence 1, 1, 2, 3, 5, 8, 13.
+
+[Example binary trees](https://tour.golang.org/content/img/tree.png)
+
+A function to check whether two binary trees store the same sequence is quite complex in most languages. We'll use Go's concurrency and channels to write a simple solution.
+
+This example uses the `tree` package, which defines the type:
+
+```golang
+type Tree struct {
+   Left  *Tree
+   Value int
+   Right *Tree
+}
+```
+
+In the following piece of code:
+
+```golang
+package main
+
+import "golang.org/x/tour/tree"
+
+// Walk walks the tree t sending all values
+// from the tree to the channel ch.
+func Walk(t *tree.Tree, ch chan int)
+
+// Same determines whether the trees
+// t1 and t2 contain the same values.
+func Same(t1, t2 *tree.Tree) bool
+
+func main() {
+}
+```
+
+1. Implement the `Walk` function.
+
+2. Test the `Walk` function.
+
+The function `tree.New(k)` constructs a randomly-structured (but always sorted) binary tree holding the values `k`, `2k`, `3k`, ..., `10k`.
+
+Create a new channel `ch` and kick off the walker:
+
+```golang
+go Walk(tree.New(1), ch)
+```
+
+Then read and print 10 values from the channel. It should be the numbers 1, 2, 3, ..., 10.
+
+3. Implement the `Same` function using `Walk` to determine whether `t1` and `t2` store the same values.
+
+4. Test the `Same` function.
+
+`Same(tree.New(1), tree.New(1))` should return `true`, and `Same(tree.New(1), tree.New(2))` should return `false`.
+
+The documentation for `Tree` can be found [here](https://godoc.org/golang.org/x/tour/tree#Tree).
+
+You can find a possible solution in [exercise-equivalent-binary-trees.go](https://github.com/lopecillo/golang/blob/master/exercise-equivalent-binary-trees.go).
+
+### sync.Mutex
+
+We've seen how channels are great for communication among goroutines.
+
+But what if we don't need communication? What if we just want to make sure only one goroutine can access a variable at a time to avoid conflicts?
+
+This concept is called *mutual exclusion*, and the conventional name for the data structure that provides it is *mutex*.
+
+Go's standard library provides mutual exclusion with `sync.Mutex` and its two methods:
+
+```golang
+   Lock
+   Unlock
+```
+
+We can define a block of code to be executed in mutual exclusion by surrounding it with a call to `Lock` and `Unlock` as shown on the `Inc` method.
+
+We can also use `defer` to ensure the mutex will be unlocked as in the `Value` method.
+
+```golang
+package main
+
+import (
+   "fmt"
+   "sync"
+   "time"
+)
+
+// SafeCounter is safe to use concurrently.
+type SafeCounter struct {
+   v   map[string]int
+   mux sync.Mutex
+}
+
+// Inc increments the counter for the given key.
+func (c *SafeCounter) Inc(key string) {
+   c.mux.Lock()
+   // Lock so only one goroutine at a time can access the map c.v.
+   c.v[key]++
+   c.mux.Unlock()
+}
+
+// Value returns the current value of the counter for the given key.
+func (c *SafeCounter) Value(key string) int {
+   c.mux.Lock()
+   // Lock so only one goroutine at a time can access the map c.v.
+   defer c.mux.Unlock()
+   return c.v[key]
+}
+
+func main() {
+   c := SafeCounter{v: make(map[string]int)}
+   for i := 0; i < 1000; i++ {
+      go c.Inc("somekey")
+   }
+
+   time.Sleep(time.Second)
+   fmt.Println(c.Value("somekey"))
+}
+```
+
+### *Exercise: Web Crawler*
+
+In this exercise you'll use Go's concurrency features to parallelize a web crawler.
+
+Modify the `Crawl` function to fetch URLs in parallel without fetching the same URL twice.
+
+*Hint:* you can keep a cache of the URLs that have been fetched on a map, but maps alone are not safe for concurrent use!
+
+```golang
+package main
+
+import (
+   "fmt"
+)
+
+type Fetcher interface {
+   // Fetch returns the body of URL and
+   // a slice of URLs found on that page.
+   Fetch(url string) (body string, urls []string, err error)
+}
+
+// Crawl uses fetcher to recursively crawl
+// pages starting with url, to a maximum of depth.
+func Crawl(url string, depth int, fetcher Fetcher) {
+   // TODO: Fetch URLs in parallel.
+   // TODO: Don't fetch the same URL twice.
+   // This implementation doesn't do either:
+   if depth <= 0 {
+      return
+   }
+   body, urls, err := fetcher.Fetch(url)
+   if err != nil {
+      fmt.Println(err)
+      return
+   }
+   fmt.Printf("found: %s %q\n", url, body)
+   for _, u := range urls {
+      Crawl(u, depth-1, fetcher)
+   }
+   return
+}
+
+func main() {
+   Crawl("https://golang.org/", 4, fetcher)
+}
+
+// fakeFetcher is Fetcher that returns canned results.
+type fakeFetcher map[string]*fakeResult
+
+type fakeResult struct {
+   body string
+   urls []string
+}
+
+func (f fakeFetcher) Fetch(url string) (string, []string, error) {
+   if res, ok := f[url]; ok {
+      return res.body, res.urls, nil
+   }
+   return "", nil, fmt.Errorf("not found: %s", url)
+}
+
+// fetcher is a populated fakeFetcher.
+var fetcher = fakeFetcher{
+   "https://golang.org/": &fakeResult{
+      "The Go Programming Language",
+      []string{
+         "https://golang.org/pkg/",
+         "https://golang.org/cmd/",
+      },
+   },
+   "https://golang.org/pkg/": &fakeResult{
+      "Packages",
+      []string{
+         "https://golang.org/",
+         "https://golang.org/cmd/",
+         "https://golang.org/pkg/fmt/",
+         "https://golang.org/pkg/os/",
+      },
+   },
+   "https://golang.org/pkg/fmt/": &fakeResult{
+      "Package fmt",
+      []string{
+         "https://golang.org/",
+         "https://golang.org/pkg/",
+      },
+   },
+   "https://golang.org/pkg/os/": &fakeResult{
+      "Package os",
+      []string{
+         "https://golang.org/",
+         "https://golang.org/pkg/",
+      },
+   },
+}
+```
+
+You can find a possible solution in [exercise-web-crawler.go](https://github.com/lopecillo/golang/blob/master/exercise-web-crawler.go).
+
+## Where to *Go* from here...
+
+The [Go Documentation](https://golang.org/doc/) is a great place to continue. It contains references, tutorials, videos, and more.
+
+To learn how to organize and work with Go code, read [How to Write Go Code](https://golang.org/doc/code.html).
+
+If you need help with the standard library, see the [package reference](https://golang.org/pkg/). For help with the language itself, you might be surprised to find the [Language Spec](https://golang.org/ref/spec) is quite readable.
+
+To further explore Go's concurrency model, watch [Go Concurrency Patterns](https://www.youtube.com/watch?v=f6kdp27TYZs) ([slides](https://talks.golang.org/2012/concurrency.slide)) and [Advanced Go Concurrency Patterns](https://www.youtube.com/watch?v=QDDwwePbDtw) ([slides](https://talks.golang.org/2013/advconc.slide)) and read the [Share Memory by Communicating](https://golang.org/doc/codewalk/sharemem/) codewalk.
+
+To get started writing web applications, watch [A simple programming environment](https://vimeo.com/53221558) ([slides](https://talks.golang.org/2012/simple.slide)) and read the [Writing Web Applications](https://golang.org/doc/articles/wiki/) tutorial.
+
+The [First Class Functions in Go](https://golang.org/doc/codewalk/functions/) codewalk gives an interesting perspective on Go's function types.
+
+The [Go Blog](https://blog.golang.org/) has a large archive of informative Go articles.
+
+Visit [golang.org](https://golang.org/) for more.
